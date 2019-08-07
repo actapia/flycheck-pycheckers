@@ -248,7 +248,8 @@ You can use `customize' to change the default values used, and
 directory-specific `.pycheckers' files to customize things
 per-directory."
 
-  :command `(,flycheck-pycheckers-command
+  :command `("python3"
+	     ,flycheck-pycheckers-command
              (eval flycheck-pycheckers-args)
              ;; When `flycheck-pycheckers-ignore-codes' is a (non-nil) list,
              ;; use it. When nil (empty list), omit the parameter entirely,

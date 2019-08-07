@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A hacked up version of the multiple-Python checkers script from EmacsWiki.
 
 Original work taken from http://www.emacswiki.org/emacs/PythonMode, author
@@ -15,6 +15,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import shutil
 import sys
 import time
 from argparse import ArgumentParser, ArgumentTypeError
@@ -318,8 +319,8 @@ class LintRunner(object):
         if args:
             return args
 
-        # `env` to use a virtualenv, if found
-        args = ['/usr/bin/env', self.command]
+        # Don't use /usr/bin/env because it breaks iOS.
+        args = ["python3",shutil.which(self.command)]
         # Get checker arguments
         args.extend(self.get_run_flags(filepath))
         # Get a checker-specific filename, if necessary
@@ -330,8 +331,8 @@ class LintRunner(object):
         # type: () -> List[str]
         """Construct the argument list for finding the parser's version, suitable for passing to Popen."""
 
-        # `env` to use a virtualenv, if found
-        args = ['/usr/bin/env', self.command]
+        # Don't use /usr/bin/env because it breaks iOS.
+        args = ["python3",shutil.which(self.command)]
         # Get checker arguments
         args.extend(self.version_args)
         return args
@@ -387,17 +388,18 @@ class LintRunner(object):
     def _executable_exists(self):
         # type: () -> bool
         # https://stackoverflow.com/a/6569511/52550
-        args = ['/usr/bin/env', 'which', self.command]
-        try:
-            process = Popen(args, stdout=PIPE, stderr=PIPE)
-        except Exception as e:                   # pylint: disable=broad-except
-            print(e)
-            return False
-        exec_path, _err = process.communicate()
+        # args = ['/usr/bin/env', 'which', self.command]
+        # try:
+        #     process = Popen(args, stdout=PIPE, stderr=PIPE)
+        # except Exception as e:                   # pylint: disable=broad-except
+        #     print(e)
+        #     return False
+        # exec_path, _err = process.communicate()
 
-        args = ['[', '-x', exec_path.strip(), ']']
-        retcode = call(args)
-        return retcode == 0
+        # args = ['[', '-x', exec_path.strip(), ']']
+        # retcode = call(args)
+        # return retcode == 0
+        return bool(shutil.which(self.command))
 
     def run(self, filepath):
         # type: (str) -> Tuple[int, List[str]]
